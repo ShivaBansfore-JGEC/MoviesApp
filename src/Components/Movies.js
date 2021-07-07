@@ -6,7 +6,10 @@ export default class Movies extends Component {
         super(props);
         this.state={
             movies:getMovies(),
-            currSearchText:''
+            currSearchText:'',
+            currentPage:1,
+            limit:4
+
         }
     }
 
@@ -24,6 +27,8 @@ export default class Movies extends Component {
         this.setState({
             currSearchText:val
         })
+
+
         //We are kind of creating two states for similar content. As the filter movies operation is temporary and occurs with the state change
         //  of currSearchText we can simply form the filterMovies array in the render method itself. So there is no need to make
         // it as a state.
@@ -45,6 +50,65 @@ export default class Movies extends Component {
         //     currSearchText:val
         // })
     }
+
+
+    sortByRatings=(e)=>{
+        let className=e.target.className;
+        console.log(className);
+        let sortedArr=[];
+        if(className=='fa fa-sort-asc'){
+
+            //sort in ascending order
+            sortedArr=this.state.movies.sort((movieA,movieB)=>{
+                return movieA.dailyRentalRate -movieB.dailyRentalRate;
+            })
+
+
+            
+        }else{
+            
+            //sort in descending order
+            sortedArr=this.state.movies.sort((movieA,movieB)=>{
+                return movieB.dailyRentalRate-movieA.dailyRentalRate;
+            })
+        }
+
+        this.setState({
+            movie:sortedArr
+        });
+    }
+
+    sortByStock=(e)=>{
+        let className=e.target.className;
+        let sortedArr=[];
+
+        if(className == 'fa fa-sort-asc'){
+
+            sortedArr=this.state.movies.sort((movieA,movieB)=>{
+                return movieA.numberInStock - movieB.numberInStock;
+            })
+
+        }else{
+            sortedArr=this.state.movies.sort((movieA,movieB)=>{
+                return movieB.numberInStock - movieA.numberInStock;
+            })
+        }
+
+        this.setState({
+            movies:sortedArr
+        })
+
+    }
+
+    handleLimit=(e)=>{
+        let val=Number(e.target.value);
+        this.setState({
+            limit:val
+        })
+
+        console.log("curr limit:",this.state.limit);
+    }
+
     render() {
         console.log('render');
         let {movies,currSearchText}=this.state;
@@ -69,6 +133,7 @@ export default class Movies extends Component {
                 </div>
                 <div className='col-9'>
                    <input onChange={this.handleChange} type='text'></input>
+                   <input type='Number' min='1' max={this.state.movies.length} onChange={this.handleLimit}></input>
                    <table className="table">
   <thead>
     <tr>
@@ -76,14 +141,14 @@ export default class Movies extends Component {
       <th scope="col">Title</th>
       <th scope="col">Genre</th>
       <th scope="col">
-      <i className="fa fa-sort-asc" aria-hidden="true"></i>
+      <i className="fa fa-sort-asc" onClick={this.sortByStock}></i>
           Stock
-          <i className="fa fa-sort-desc" aria-hidden="true"></i>
+          <i className="fa fa-sort-desc" onClick={this.sortByStock}></i>
           </th>
       <th scope="col">
-      <i className="fa fa-sort-asc" aria-hidden="true"></i>
+      <i className="fa fa-sort-asc"  onClick={this.sortByRatings}></i>
           Rate
-        <i className="fa fa-sort-desc" aria-hidden="true"></i>
+        <i className="fa fa-sort-desc" onClick={this.sortByRatings}></i>
           </th>
       <th></th>
     </tr>
